@@ -34,10 +34,10 @@ export default function Auth() {
         <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary opacity-20 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
 
         <h1 className="text-4xl flex items-center flex-col font-extrabold mb-4 text-center text-primary">
-         <img src="/HabitPilot.png" alt="" className="h-20 w-20" /> HabitPilot
+         <img src="/logo.png" alt="" className="h-20 w-20" /> FitGen AI
         </h1>
         <p className="text-sm mb-8 text-muted-foreground text-center">
-          Log in with Google to track your habits and boost your productivity!
+          Log in with Google to make Yourself Fit and Healthy
         </p>
 
         <div className="w-full flex justify-center mb-6">
