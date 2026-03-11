@@ -3,6 +3,7 @@ import cors from "cors";
 import { prisma } from "./config/db.js";
 import { config } from "dotenv";
 import authRoute from "./routes/auth.route.js";
+import profileRoute from "./routes/profile.route.js"
 import corsOptions from "./config/cors.js";
 
 config();
@@ -15,6 +16,7 @@ app.use(cors(corsOptions));
 
 //Routes
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/profile",profileRoute)
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Api is running");

@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { googleAuth } from "../services/auth.services.js";
+import { googleAuth } from "../services/auth.service.js";
 
 export const googleAuthController = async (req: Request, res: Response) => {
   try {
