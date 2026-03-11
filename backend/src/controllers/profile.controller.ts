@@ -9,7 +9,6 @@ export const profileController = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "User ID is required" });
     }
     const result = await profile(userId, profileData);
-
     return res.status(200).json({
       message: "Profile updated successfully",
       data: result,
