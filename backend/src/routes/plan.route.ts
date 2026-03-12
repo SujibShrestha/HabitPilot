@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { planController } from "../controllers/plan.controller.js";
+import { currentPlan, planController } from "../controllers/plan.controller.js";
 
 const router = Router()
 
 router.post("/generate", planController)
+router.get("/current",currentPlan)
 
 export default router

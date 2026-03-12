@@ -39,3 +39,19 @@ export const plan = async (userId: string) => {
     console.error("Error while Generating plan", error);
   }
 };
+
+export async function current(userId: string) {
+  try {
+    const plan = await prisma.trainingPlans.findFirst({
+      where: { user_id: userId },
+      orderBy: { created_at: "desc" },
+    });
+
+    if (!plan) {
+      throw new Error("No plan found");
+    }
+    return plan;
+  } catch (error) {
+    console.error("Error fetching plan:", error);
+  }
+}
