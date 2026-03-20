@@ -36,7 +36,6 @@ const Home = () => {
       : parsedFrequencyDays);
 
   const sessionLengthValue = profile?.session_length ?? null;
-console.log(profile)
   const weeklyVolumeValue =
     currentPlan?.weeklySchedule?.reduce((total, day) => {
       const exercises =

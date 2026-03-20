@@ -1,7 +1,7 @@
 import axios from "axios";
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true, 
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -15,7 +15,7 @@ export const googleUser = async (token: string) => {
 // Profile APIs
 export const updateUserProfile = async (
   profileData: {
-    userId:string;
+    userId: string;
     goal: string;
     experience: string;
     days_per_week: number;
@@ -24,9 +24,8 @@ export const updateUserProfile = async (
     injuries?: string;
     preferred_split: string;
   },
-  token: string
+  token: string,
 ) => {
-  console.log(profileData)
   const res = await api.post("/profile", profileData, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -47,15 +46,11 @@ export const getCurrentProfile = async (token: string) => {
 
 // Plan APIs
 export const generateTrainingPlan = async (token: string, userId?: string) => {
-  const res = await api.post(
-    "/plan/generate",
-    userId ? { userId } : {},
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const res = await api.post("/plan/generate", userId ? { userId } : {}, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   return res.data;
 };
 
@@ -64,8 +59,7 @@ export const getCurrentTrainingPlan = async (token: string) => {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    
   });
- 
+
   return res.data;
 };
