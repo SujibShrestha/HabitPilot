@@ -1,13 +1,15 @@
-import { useSelector } from "react-redux"
-import type { RootState } from "../store/store";
 
+import NavBar from "../components/NavBar";
+import { Outlet } from "react-router-dom";
 
 const MainLayout = () => {
-    const user = useSelector((state: RootState) => state.auth.user);
+   
   return (
-    <div>MainLayout
-    <h1>Hello {user?.name.toUpperCase()} </h1>
-    </div>
+   <div>
+    <NavBar/>
+    <Outlet/>
+    
+   </div>
   )
 }
 

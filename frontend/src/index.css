@@ -203,3 +203,41 @@
     @apply font-sans;
   }
 }
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease forwards;
+}
+
+/* Fade animation for body/background transition */
+@keyframes fade-bg {
+  0% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-fade {
+  animation: fade-bg 0.3s ease forwards;
+}
+
+/* Smooth transition for all color changes */
+html,
+body,
+* {
+  transition-property: background-color, color, border-color, fill, stroke;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+}
