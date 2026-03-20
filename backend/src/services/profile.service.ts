@@ -56,3 +56,16 @@ export const profile = async (userId: string, profileData: UserProfile) => {
     throw error;
   }
 };
+
+export const getProfileByUserId = async (userId: string) => {
+  try {
+    const result = await prisma.userProfile.findUnique({
+      where: { user_id: userId },
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Profile fetch error:", error);
+    throw error;
+  }
+};

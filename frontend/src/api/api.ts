@@ -35,6 +35,16 @@ export const updateUserProfile = async (
   return res.data;
 };
 
+export const getCurrentProfile = async (token: string) => {
+  const res = await api.get("/profile/current", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
+};
+
 // Plan APIs
 export const generateTrainingPlan = async (token: string, userId?: string) => {
   const res = await api.post(
@@ -54,6 +64,8 @@ export const getCurrentTrainingPlan = async (token: string) => {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    
   });
+ 
   return res.data;
 };

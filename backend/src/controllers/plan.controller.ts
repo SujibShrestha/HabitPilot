@@ -21,10 +21,12 @@ export const planController = async (req: Request, res: Response) => {
 
 export const currentPlan = async (req: Request, res: Response) => {
   try {
-    const userId = req.query.userId as string;
+    const userId = req.user?.id; 
+
     if (!userId) {
-      return res.status(400).json({ error: "User ID is required" });
+      return res.status(401).json({ error: "Unauthorized" });
     }
+
     const plan = await current(userId);
 
     if (!plan) {

@@ -83,6 +83,7 @@ const plansSlice = createSlice({
       state.currentPlan = null;
       state.hasPlan = false;
       state.loading = false;
+      state.generating = false;
     },
   },
 });

@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {
-  getCurrentTrainingPlan,
-  generateTrainingPlan,
-} from "../api/api";
+import { getCurrentTrainingPlan, generateTrainingPlan } from "../api/api";
 import {
   setPlan,
   setLoading,
@@ -34,7 +31,7 @@ const TrainingPlans = () => {
   const userId = useSelector((state: RootState) => state.auth.user?.id);
   const profile = useSelector((state: RootState) => state.profile.profile);
   const { currentPlan, loading, generating, error } = useSelector(
-    (state: RootState) => state.plans
+    (state: RootState) => state.plans,
   );
   const [collapsed, setCollapsed] = useState<CollapsedState>({});
 
@@ -44,33 +41,31 @@ const TrainingPlans = () => {
       return;
     }
 
-    if (!profile) {
-      navigate("/profile");
-      return;
-    }
-
     fetchPlan();
-  }, [token, profile]);
+  }, [token]);
 
   const fetchPlan = async () => {
     try {
       dispatch(setLoading(true));
       const response = await getCurrentTrainingPlan(token!);
-      if (response.data && response.data.plan_json) {
+      const planResponse = response?.data ?? response;
+      const rawPlanJson = planResponse?.plan_json ?? planResponse?.planJson;
+
+      if (planResponse && rawPlanJson) {
         const planData =
-          typeof response.data.plan_json === "string"
-            ? JSON.parse(response.data.plan_json)
-            : response.data.plan_json;
+          typeof rawPlanJson === "string" ? JSON.parse(rawPlanJson) : rawPlanJson;
+        const weeklySchedule =
+          planData?.weeklySchedule ?? planData?.weekly_schedule ?? [];
         dispatch(
           setPlan({
-            id: response.data.id,
-            userId: response.data.user_id,
+            id: planResponse.id,
+            userId: planResponse.user_id ?? planResponse.userId,
             overview: planData.overview || {},
-            weeklySchedule: planData.weeklySchedule || [],
+            weeklySchedule,
             progression: planData.progression || "",
-            version: response.data.version || 1,
-            createdAt: response.data.created_at,
-          })
+            version: planResponse.version || 1,
+            createdAt: planResponse.created_at ?? planResponse.createdAt,
+          }),
         );
       } else {
         dispatch(setNoPlan());
@@ -87,17 +82,20 @@ const TrainingPlans = () => {
   };
 
   const handleGeneratePlan = async () => {
+    if (!profile) {
+      navigate("/profile");
+      return;
+    }
+
     try {
       dispatch(setGenerating(true));
       await generateTrainingPlan(token!, userId);
-      // Refetch the plan after generation
-      setTimeout(() => fetchPlan(), 1000);
+      await fetchPlan();
     } catch (err: unknown) {
       const errorMsg =
         (err as any)?.response?.data?.error ||
         "Failed to generate plan. Please try again.";
       dispatch(setError(errorMsg));
-      dispatch(setGenerating(false));
     }
   };
 
@@ -113,7 +111,9 @@ const TrainingPlans = () => {
       <div className="min-h-screen bg-gradient-to-br from-background to-card py-6 sm:py-12 px-3 sm:px-4 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-10 sm:w-12 h-10 sm:h-12 animate-spin text-primary mx-auto mb-3 sm:mb-4" />
-          <p className="text-sm sm:text-base text-muted-foreground">Loading your training plan...</p>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            Loading your training plan...
+          </p>
         </div>
       </div>
     );
@@ -130,7 +130,9 @@ const TrainingPlans = () => {
                 <h2 className="text-lg sm:text-xl font-bold text-destructive mb-1 sm:mb-2">
                   Error Loading Plan
                 </h2>
-                <p className="text-xs sm:text-sm text-muted-foreground">{error}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  {error}
+                </p>
               </div>
             </div>
             <button
@@ -273,7 +275,10 @@ const TrainingPlans = () => {
                       <div className="p-3 sm:p-6 space-y-3 sm:space-y-4">
                         {day.exercises && day.exercises.length > 0 ? (
                           day.exercises.map((exercise, exIdx) => (
-                            <div key={exIdx} className="space-y-1.5 sm:space-y-2">
+                            <div
+                              key={exIdx}
+                              className="space-y-1.5 sm:space-y-2"
+                            >
                               <div className="flex items-start justify-between gap-2">
                                 <div className="min-w-0 flex-1">
                                   <h4 className="font-semibold text-foreground text-xs sm:text-base">
@@ -312,7 +317,9 @@ const TrainingPlans = () => {
                             </div>
                           ))
                         ) : (
-                          <p className="text-xs sm:text-sm text-muted-foreground">Rest day</p>
+                          <p className="text-xs sm:text-sm text-muted-foreground">
+                            Rest day
+                          </p>
                         )}
                       </div>
                     </div>

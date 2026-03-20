@@ -22,32 +22,58 @@ const Home = () => {
   const { profile, isSetup } = useSelector((state: RootState) => state.profile);
   const { currentPlan } = useSelector((state: RootState) => state.plans);
 
+  const parsedFrequencyDays = (() => {
+    const frequency = currentPlan?.overview?.frequency;
+    if (!frequency) return null;
+    const match = frequency.match(/\d+/);
+    return match ? Number(match[0]) : null;
+  })();
+
+  const daysPerWeekValue =
+    profile?.days_per_week ??
+    (currentPlan?.weeklySchedule?.length
+      ? currentPlan.weeklySchedule.length
+      : parsedFrequencyDays);
+
+  const sessionLengthValue = profile?.session_length ?? null;
+console.log(profile)
+  const weeklyVolumeValue =
+    currentPlan?.weeklySchedule?.reduce((total, day) => {
+      const exercises =
+        (day as any)?.exercises ?? (day as any)?.workouts ?? (day as any)?.items ?? [];
+      return total + (Array.isArray(exercises) ? exercises.length : 0);
+    }, 0) ?? null;
+
   useEffect(() => {
     if (!token) {
       navigate("/auth");
       return;
     }
 
-    // Try to fetch plan if it exists
     const fetchPlanIfExists = async () => {
       try {
         const response = await getCurrentTrainingPlan(token);
-        if (response.data && response.data.plan_json) {
+        const planResponse = response?.data ?? response;
+        const rawPlanJson = planResponse?.plan_json ?? planResponse?.planJson;
+
+        if (planResponse && rawPlanJson) {
           const planData =
-            typeof response.data.plan_json === "string"
-              ? JSON.parse(response.data.plan_json)
-              : response.data.plan_json;
+            typeof rawPlanJson === "string" ? JSON.parse(rawPlanJson) : rawPlanJson;
+          const weeklySchedule =
+            planData?.weeklySchedule ?? planData?.weekly_schedule ?? [];
           dispatch(
             setPlan({
-              id: response.data.id,
-              userId: response.data.user_id,
+              id: planResponse.id,
+              userId: planResponse.user_id ?? planResponse.userId,
               overview: planData.overview || {},
-              weeklySchedule: planData.weeklySchedule || [],
+              weeklySchedule,
               progression: planData.progression || "",
-              version: response.data.version || 1,
-              createdAt: response.data.created_at,
+              version: planResponse.version || 1,
+              createdAt: planResponse.created_at ?? planResponse.createdAt,
             })
           );
+        } else {
+          dispatch(setNoPlan());
         }
       } catch {
         // No plan exists yet, that's okay
@@ -55,10 +81,8 @@ const Home = () => {
       }
     };
 
-    if (isSetup) {
-      fetchPlanIfExists();
-    }
-  }, [token, dispatch, navigate, isSetup]);
+    fetchPlanIfExists();
+  }, [token, dispatch, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-card/20 to-background py-6 sm:py-12 px-3 sm:px-4">
@@ -259,7 +283,7 @@ const Home = () => {
                   <p className="text-xs sm:text-sm text-muted-foreground">Days/Week</p>
                 </div>
                 <p className="text-2xl sm:text-3xl font-bold text-foreground">
-                  {profile?.days_per_week || "—"}
+                  {daysPerWeekValue ?? "—"}
                 </p>
               </div>
 
@@ -271,8 +295,10 @@ const Home = () => {
                   </p>
                 </div>
                 <p className="text-2xl sm:text-3xl font-bold text-foreground">
-                  {profile?.session_length}
-                  <span className="text-base sm:text-lg text-muted-foreground">min</span>
+                  {sessionLengthValue ?? "—"}
+                  {sessionLengthValue !== null && (
+                    <span className="text-base sm:text-lg text-muted-foreground">min</span>
+                  )}
                 </p>
               </div>
 
@@ -284,13 +310,7 @@ const Home = () => {
                   </p>
                 </div>
                 <p className="text-2xl sm:text-3xl font-bold text-foreground">
-                  {currentPlan.weeklySchedule
-                    ? currentPlan.weeklySchedule.reduce(
-                        (total, day) =>
-                          total + (day.exercises ? day.exercises.length : 0),
-                        0
-                      )
-                    : "—"}
+                  {weeklyVolumeValue ?? "—"}
                   <span className="text-base sm:text-lg text-muted-foreground">
                     {" "}
                     ex.
