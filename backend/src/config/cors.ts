@@ -4,6 +4,7 @@ const allowedOrigins: (string | RegExp)[] = [
   "http://localhost:3000", // other frontend devs
   "http://127.0.0.1:3000",
   "http://localhost:5173",
+  "https://fitgen-ai-six.vercel.app"
 ].filter(Boolean) as (string | RegExp)[];
 
 const corsOptions: CorsOptions = {
